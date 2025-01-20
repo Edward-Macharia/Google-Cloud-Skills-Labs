@@ -1,0 +1,84 @@
+######## Task 1. Download the monolith code and build your container ##########
+
+
+git clone https://github.com/googlecodelabs/monolith-to-microservices.git
+
+nvm install --lts
+
+cd ~/monolith-to-microservices
+./setup.sh
+
+
+cd ~/monolith-to-microservices/monolith
+gcloud builds submit --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/$Monolith_Identifier:1.0.0 .
+
+
+
+######## Task 2. Create a kubernetes cluster and deploy the application ##########  
+
+
+gcloud config set compute/zone $ZONE
+
+gcloud container clusters create $Cluster_Name --num-nodes 3
+
+kubectl create deployment $Monolith_Identifier --image=gcr.io/${GOOGLE_CLOUD_PROJECT}/$Monolith_Identifier:1.0.0
+
+kubectl expose deployment $Monolith_Identifier --type=LoadBalancer --port 80 --target-port 8080
+
+
+
+######## Task 3. Create new microservices ########## 
+
+
+cd ~/monolith-to-microservices/microservices/src/orders
+gcloud builds submit --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/$Orders_Identifier:1.0.0 .
+
+
+cd ~/monolith-to-microservices/microservices/src/products
+gcloud builds submit --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/$Products_Identifier:1.0.0 .
+
+
+
+######## Task 4. Deploy the new microservices ##########
+
+
+
+kubectl create deployment $Orders_Identifier --image=gcr.io/${GOOGLE_CLOUD_PROJECT}/$Orders_Identifier:1.0.0
+
+kubectl expose deployment $Orders_Identifier --type=LoadBalancer --port 80 --target-port 8081
+
+
+kubectl create deployment $Products_Identifier --image=gcr.io/${GOOGLE_CLOUD_PROJECT}/$Products_Identifier:1.0.0
+
+kubectl expose deployment $Products_Identifier --type=LoadBalancer --port 80 --target-port 8082
+
+
+
+######## Task 5. Configure and deploy the Frontend microservice ########## 
+
+cd ~/monolith-to-microservices/react-app
+nano .env
+
+---Replace the REACT_APP_PRODUCTS_URL to the new format while replacing with your Orders and Product microservice IP addresses---
+
+npm run build
+
+cd ~/monolith-to-microservices/react-app
+
+
+
+######## Task 6. Create a containerized version of the Frontend microservice ##########
+
+
+cd ~/monolith-to-microservices/microservices/src/frontend
+
+gcloud builds submit --tag gcr.io/${GOOGLE_CLOUD_PROJECT}/$Frontend_Identifier:1.0.0 .
+
+
+
+######## Task 7. Deploy the Frontend microservice ##########
+
+
+kubectl create deployment $Frontend_Identifier --image=gcr.io/${GOOGLE_CLOUD_PROJECT}/$Frontend_Identifier:1.0.0
+
+kubectl expose deployment $Frontend_Identifier --type=LoadBalancer --port 80 --target-port 8080
