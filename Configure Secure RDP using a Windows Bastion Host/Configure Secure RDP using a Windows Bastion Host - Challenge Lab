@@ -48,4 +48,4 @@ gcloud compute reset-windows-password vm-securehost --user app_admin --zone $zon
 # 14: Run: Install-WindowsFeature -name Web-Server -IncludeManagementTools
 
 
----- You’ve successfully deployed and configured a Secure RDP using a Windows Bastion Host. ----
+---- You’ve successfully configured a Secure RDP using a Windows Bastion Host. ----
