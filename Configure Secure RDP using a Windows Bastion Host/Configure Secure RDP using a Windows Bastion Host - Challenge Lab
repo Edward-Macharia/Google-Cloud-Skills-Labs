@@ -43,9 +43,9 @@ gcloud compute reset-windows-password vm-securehost --user app_admin --zone $zon
 
 # 12: Fill username with app_admin and password with your copied vm-securehost's password 
 
-# 13: Click Search, type Powershell, right click and Run as Administrator
+# 13: Type PowerShell, then right-click on it and select Run as Administrator.
 
-# 14: Run: Install-WindowsFeature -name Web-Server -IncludeManagementTools
+# 14: Run the command: Install-WindowsFeature -name Web-Server -IncludeManagementTools
 
 
----- You’ve successfully configured a Secure RDP using a Windows Bastion Host. ----
+---- You’ve successfully configured a Secure RDP using a Windows Bastion Host. ---- 
