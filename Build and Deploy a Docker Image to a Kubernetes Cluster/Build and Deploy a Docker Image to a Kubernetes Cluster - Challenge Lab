@@ -1,0 +1,60 @@
+####### Configure Secure RDP using a Windows Bastion Host #######
+
+---replace with your values provided on the lab---
+
+export REGION=us-east1
+export ZONE=us-east1-d 
+export PROJECT_ID=qwiklabs-gcp-04-5e2af4fa68b1
+
+# 1: Create a Kubernetes cluster
+
+gcloud container clusters create echo-cluster \
+    --num-nodes=1 \
+    --zone=$ZONE \
+    --machine-type=e2-standard-2 \
+    --enable-ip-alias
+
+gcloud container clusters list
+
+
+# 2: Build a tagged Docker image
+
+gsutil cp gs://${PROJECT_ID}/echo-web.tar.gz . // - Downloads the archive file from the Cloud Storage Bucket
+
+tar -xvzf echo-web.tar.gz  // - Extracts the Archive
+
+docker build -t echo-app:v1 .  // - Builds the Docker image
+docker images
+
+# 3: Push the image to the Google Container Registry
+
+docker tag echo-app:v1 gcr.io/${PROJECT_ID}/echo-app:v1  // - Tag the Docker Image for GCR
+
+docker push gcr.io/${PROJECT_ID}/echo-app:v1
+
+gcloud container images list --repository=gcr.io/${PROJECT_ID}   // - verify image uploaded to GCR
+
+
+# 4: Deploy the application to the Kubernetes cluster
+
+kubectl create deployment echo-web --image=gcr.io/${PROJECT_ID}/echo-app:v1  // - Create the deployment
+
+gcloud container clusters get-credentials echo-cluster --zone=$ZONE  // - Generate kubeconfig entry for cluster
+
+kubectl expose deployment echo-web \
+    --type=LoadBalancer \
+    --port=80 \
+    --target-port=8000                                        // - expose the service
+
+
+kubectl get service echo-web
+
+
+
+
+---- You’ve successfully Built and Deployed a Docker Image to a Kubernetes Cluster. ---- 
+
+
+
+
+
