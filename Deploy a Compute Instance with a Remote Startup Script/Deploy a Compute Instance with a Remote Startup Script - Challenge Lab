@@ -1,0 +1,26 @@
+######## Step by step guide to solve the lab. ########
+
+1. Left Navigation menu - Storage - click Create Bucket
+
+2. Bucket Name - {Project_ID} and click Create
+
+3. Upload 'Sample Startup Script' 
+
+4. Copy Public Access URL 
+
+5. Navigation Menu - Compute Engine - VM Instances - lab monitor instance - Edit
+
+6. Locate Metadata
+
+7. Add Key=startup-script-url  Value=[Public Access URL]
+
+8. Locate Firewall - Check HTTP
+
+9. Save
+
+10. Reset VM Instance - lab monitor instance
+
+11. Click on Instance External IP - add Http://IP-ADDRESS
+
+
+*Check Lab Progress*
