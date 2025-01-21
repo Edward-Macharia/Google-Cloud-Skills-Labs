@@ -1,0 +1,51 @@
+####### Configure Secure RDP using a Windows Bastion Host #######
+
+---replace with your values provided on the lab---
+export REGION=$region
+export ZONE=$zone
+
+
+# 1 : Create a new VPC network called securenetwork.
+
+gcloud compute networks create securenetwork --subnet-mode custom
+
+# 2 : Create a new VPC subnet inside securenetwork in the {specified} region
+
+gcloud compute networks subnets create securenetwork-subnet --network=securenetwork --region $REGION --range=192.168.16.0/20
+
+# 3 : Configure a firewall rule that allows inbound RDP traffic (TCP port 3389) from the internet to the bastion host
+
+gcloud compute firewall-rules create rdp-ingress-fw-rule --allow=tcp:3389 --source-ranges 0.0.0.0/0 --target-tags allow-rdp-traffic --network securenetwork
+
+# 4 : Deploy a Windows 2016 server instance called vm-securehost with two network interfaces in the {specified} zone.
+
+gcloud compute instances create vm-securehost --zone=$ZONE --machine-type=e2-medium --network-interface=subnet=securenetwork-subnet,no-address --network-interface=subnet=default,no-address --tags=allow-rdp-traffic --image=projects/windows-cloud/global/images/windows-server-2016-dc-v20220513
+
+# 5 : Deploy a second Windows 2016 server (Server with Desktop Experience) instance called vm-bastionhost with two network interfaces in the {specigfied} zone.
+
+gcloud compute instances create vm-bastionhost --zone=$ZONE --machine-type=e2-medium --network-interface=subnet=securenetwork-subnet --network-interface=subnet=default,no-address --tags=allow-rdp-traffic --image=projects/windows-cloud/global/images/windows-server-2016-dc-v20220513
+
+# 6 : The vm-securehost is running Microsoft IIS web server software.
+
+gcloud compute reset-windows-password vm-bastionhost --user app_admin --zone $zone (choose Y and copy the password)
+gcloud compute reset-windows-password vm-securehost --user app_admin --zone $zone (choose Y and copy the password)
+
+
+# 7: Install Chrome RDP for Google Cloud Platform (https://chrome.google.com/webstore/detail/chrome-rdp-for-google-clo/mpbbnannobiobpnfblimoapbephgifkm)
+
+# 8:  Go to Compute Engine > VM instances
+
+# 9: Click RDP on vm-bastionhost, fill username with app_admin and password with your copied vm-bastionhost's password 
+
+# 10: Click Search, search for Remote Desktop Connection and run it
+
+# 11: Copy and paste the internal ip from vm-securehost, click Connect
+
+# 12: Fill username with app_admin and password with your copied vm-securehost's password 
+
+# 13: Click Search, type Powershell, right click and Run as Administrator
+
+# 14: Run: Install-WindowsFeature -name Web-Server -IncludeManagementTools
+
+
+---- You’ve successfully deployed and configured a Secure RDP using a Windows Bastion Host. ----
