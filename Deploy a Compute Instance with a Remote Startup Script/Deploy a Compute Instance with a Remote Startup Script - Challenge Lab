@@ -10,9 +10,10 @@
 
 5. Navigation Menu - Compute Engine - VM Instances - lab monitor instance - Edit
 
-6. Locate Metadata
+6. Locate Metadata section
 
-7. Add Key=startup-script-url  Value=[Public Access URL]
+7. In the Key field, enter startup-script-url
+   In the Value field, paste the URL of the remote script [Public Access URL]
 
 8. Locate Firewall - Check HTTP
 
