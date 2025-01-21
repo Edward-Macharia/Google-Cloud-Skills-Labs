@@ -44,7 +44,7 @@ gcloud container clusters get-credentials echo-cluster --zone=$ZONE  // - Genera
 kubectl expose deployment echo-web \
     --type=LoadBalancer \
     --port=80 \
-    --target-port=8000                                        // - expose the service
+    --target-port=8000                                        		// - expose the service
 
 
 kubectl get service echo-web
