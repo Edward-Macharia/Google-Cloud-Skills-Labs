@@ -1,0 +1,54 @@
+
+####### Configure Secure RDP using a Windows Bastion Host #######
+
+---replace with your values provided in the lab---
+
+export INSTANCE_ID="wordpress-db-instance"
+export REGION="us-east4"
+export ZONE="us-east4-a"
+export ROOT_PASSWORD="Password1*"
+export BUCKET_NAME="qwiklabs-gcp-00-5ab0f4ac26f6"
+
+
+# 1. Create a new Cloud SQL instance
+
+gcloud sql instances create $INSTANCE_ID \
+    --database-version=MYSQL_8_0 \
+    --tier=db-f1-micro \
+    --region=$REGION \
+    --root-password=$ROOT_PASSWORD \
+    --storage-size=10GB
+
+
+# 2. Configure the new database
+
+export DB_NAME="wordpress_db"
+export DB_USER="wp_user"
+export DB_PASSWORD="password123"
+
+gcloud sql databases create $DB_NAME --instance=$INSTANCE_ID 		// - create database
+
+gcloud sql users create $DB_USER \
+    --instance=$INSTANCE_ID \
+    --password=$DB_PASSWORD										// - Create Database User
+
+
+gcloud sql databases list --instance=$INSTANCE_ID
+gcloud sql users list --instance=$INSTANCE_ID					// - verify configuration
+
+
+# 3. Perform a database dump and import the data
+
+mysqldump -u blogadmin -p wordpress > wordpress_db.mysqldump		// - export current DB
+
+gcloud storage buckets create gs://${BUCKET_NAME} --location=REGION		// - Upload SQL dump 
+
+gsutil cp wordpress_db.sql gs://$BUCKET_NAME/
+
+
+gcloud sql import sql $INSTANCE_ID gs://$BUCKET_NAME/wordpress_db.sql \
+    --database=$DB_NAME													// - import SQL dump
+
+
+gcloud sql connect $INSTANCE_ID --user=$DB_USER 				// - connect to DB and confirm tables imported
+
