@@ -7,7 +7,7 @@ export INSTANCE_ID="wordpress-db-instance"
 export REGION="us-east4"
 export ZONE="us-east4-a"
 export ROOT_PASSWORD="Password1*"
-export BUCKET_NAME="qwiklabs-gcp-00-5ab0f4ac26f6"
+export BUCKET_NAME="qwiklabs-gcp-02-8a661c67ae7c"
 
 
 # 1. Create a new Cloud SQL instance
@@ -51,4 +51,3 @@ gcloud sql import sql $INSTANCE_ID gs://$BUCKET_NAME/wordpress_db.sql \
 
 
 gcloud sql connect $INSTANCE_ID --user=$DB_USER 				// - connect to DB and confirm tables imported
-
